@@ -9,8 +9,18 @@ function App() {
  const [password, setPassword] = useState('')
  const [authMessage, setAuthMessage] = useState('')
 
- useEffect(() => {
+useEffect(() => {
   fetchTasks()
+
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setSession(session)
+  })
+
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    setSession(session)
+  })
+
+  return () => subscription.unsubscribe()
 }, [])
 
 async function handleSignUp() {
@@ -31,6 +41,9 @@ async function handleLogIn() {
   }
 }
 
+ async function handleLogOut() {
+  await supabase.auth.signOut()
+ }
 
  function handleEmailChange(event) {
    setEmail(event.target.value)
@@ -81,6 +94,7 @@ async function handleLogIn() {
       <div>
         <input value={tasksInput} onChange={handleTaskInputChange} />
         <button onClick={handleAddTask}>Add Task</button>
+        <button onClick={handleLogOut}>Log Out</button>
         <ul>
           {tasks.map((t) => (
             <li key={t.id}>{t.task}</li>
