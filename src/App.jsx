@@ -10,8 +10,6 @@ function App() {
  const [authMessage, setAuthMessage] = useState('')
 
 useEffect(() => {
-  fetchTasks()
-
   supabase.auth.getSession().then(({ data: { session } }) => {
     setSession(session)
   })
@@ -22,6 +20,14 @@ useEffect(() => {
 
   return () => subscription.unsubscribe()
 }, [])
+
+useEffect(() => {
+  if (session) {
+    fetchTasks()
+  } else {
+    setTasks([])
+  }
+}, [session])
 
 async function handleSignUp() {
   const { error } = await supabase.auth.signUp({ email, password })
@@ -58,7 +64,7 @@ async function handleLogIn() {
 
 
  async function fetchTasks() {
-  const { data, error } = await supabase.from('tasks').select('*')
+  const { data, error } = await supabase.from('tasks').select('*').eq('user_id', session.user.id)
   if (error) {
     console.error('Error fetching tasks:', error)
   } else {
@@ -70,8 +76,8 @@ async function handleLogIn() {
   setTasksInput(event.target.value)
  }
 
- async function handleAddTask() {
-  const { data, error } = await supabase.from('tasks').insert([{ task: tasksInput }]).select()
+async function handleAddTask() {
+  const { data, error } = await supabase.from('tasks').insert([{ task: tasksInput, user_id: session.user.id }]).select()
   if (error) {
     console.log(error)
   } else {
