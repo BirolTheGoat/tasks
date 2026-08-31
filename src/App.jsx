@@ -86,6 +86,15 @@ async function handleAddTask() {
   }
 }
 
+async function handleToggleComplete(id, currentStatus) {
+  const { error } = await supabase.from('tasks').update({ completed: !currentStatus }).eq('id', id)
+  if (error) {
+    console.log(error)
+  } else {
+    setTasks(tasks.map((t) => (t.id === id ? { ...t, completed: !currentStatus } : t)))
+  }
+}
+
  return (
   <div>
     {!session ? (
@@ -103,7 +112,16 @@ async function handleAddTask() {
         <button onClick={handleLogOut}>Log Out</button>
         <ul>
           {tasks.map((t) => (
-            <li key={t.id}>{t.task}</li>
+            <li key={t.id}>
+              <input
+                type="checkbox"
+                checked={t.completed}
+                onChange={() => handleToggleComplete(t.id, t.completed)}
+              />
+              <span style={{ textDecoration: t.completed ? 'line-through' : 'none' }}>
+                {t.task}
+              </span>
+            </li>
           ))}
         </ul>
       </div>
