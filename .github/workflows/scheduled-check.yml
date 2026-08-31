@@ -1,0 +1,12 @@
+name: Scheduled Task Test
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  test-run:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This ran automatically at $(date)"
