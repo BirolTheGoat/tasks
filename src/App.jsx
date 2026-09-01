@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import './App.css'
 
 function App() {
   const [tasks, setTasks] = useState([])
@@ -92,29 +93,38 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="page">
       {!session ? (
-        <div>
-          <input type="email" value={email} onChange={handleEmailChange} placeholder="Email" />
-          <input type="password" value={password} onChange={handlePasswordChange} placeholder="Password" />
-          <button onClick={handleSignUp}>Sign Up</button>
-          <button onClick={handleLogIn}>Log In</button>
-          <p>{authMessage}</p>
+        <div className="auth-card">
+          <h1>Tasks</h1>
+          <input className="text-input" type="email" value={email} onChange={handleEmailChange} placeholder="Email" />
+          <input className="text-input" type="password" value={password} onChange={handlePasswordChange} placeholder="Password" />
+          <div className="button-row">
+            <button className="btn btn-primary" onClick={handleSignUp}>Sign Up</button>
+            <button className="btn btn-secondary" onClick={handleLogIn}>Log In</button>
+          </div>
+          {authMessage && <p className="auth-message">{authMessage}</p>}
         </div>
       ) : (
-        <div>
-          <input value={tasksInput} onChange={handleTaskInputChange} />
-          <button onClick={handleAddTask}>Add Task</button>
-          <button onClick={handleLogOut}>Log Out</button>
-          <ul>
+        <div className="app-card">
+          <div className="app-header">
+            <h1>Tasks</h1>
+            <button className="btn btn-logout" onClick={handleLogOut}>Log Out</button>
+          </div>
+          <div className="task-form">
+            <input className="text-input" value={tasksInput} onChange={handleTaskInputChange} placeholder="Add a new task..." />
+            <button className="btn btn-primary" onClick={handleAddTask}>Add Task</button>
+          </div>
+          <ul className="task-list">
             {tasks.map((t) => (
-              <li key={t.id}>
+              <li key={t.id} className="task-item">
                 <input
+                  className="task-checkbox"
                   type="checkbox"
                   checked={t.completed}
                   onChange={() => handleToggleComplete(t.id, t.completed)}
                 />
-                <span style={{ textDecoration: t.completed ? 'line-through' : 'none' }}>
+                <span className={t.completed ? 'task-text completed' : 'task-text'}>
                   {t.task}
                 </span>
               </li>
